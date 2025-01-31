@@ -1,3 +1,4 @@
+
 import Button from "../shared/Button";
 import HorizontalLines from "../shared/HorizontalLines";
 
@@ -5,7 +6,7 @@ const Hero = () => {
   return (
     <div
       className="w-full h-screen bg-cover bg-center bg-fixed"
-      style={{ backgroundImage: "url('/tahubulat2.jpg')" }}
+      style={{ backgroundImage: "url('/TahuBulat2.jpg')" }}
     >
       <div className="h-full flex flex-col items-center justify-center text-center px-4">
         <h2 className="font-cookie text-4xl md:text-6xl lg:text-7xl text-[#fffffe]">

@@ -4,7 +4,7 @@ const SoftlyRounds = () => {
   return (
     <div
       className="w-full h-screen bg-cover bg-center bg-fixed"
-      style={{ backgroundImage: "url('/tahubulat4.webp')" }}
+      style={{ backgroundImage: "url('/TahuBulat4.webp')" }}
     >
       <div className="h-full flex flex-col items-center justify-center">
         <h1 className="text-white text-3xl md:text-4xl lg:text-5xl font-anton tracking-[0.1em] text-center px-4">
