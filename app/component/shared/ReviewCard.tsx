@@ -32,7 +32,7 @@ export default function ReviewCard() {
 ];
 
   useEffect(() => {
-    fetch("https://randomuser.me/api/?results=5")
+    fetch("https://randomuser.me/api/?results=11")
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch user data");
         return res.json();
