@@ -1,14 +1,26 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useCart } from "../../app/context/cartcontext";
 import { menu } from "../../app/product/datamenu";
 import { useRouter } from "next/navigation";
+//import { supabase } from "../../lib/supabase";
+import dynamic from "next/dynamic";
+import "leaflet/dist/leaflet.css";
 
-export default function FullWindowCart() {
+const DynamicMap = dynamic(() => import("../payment/map"), { ssr: false });
+
+interface CheckoutModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onCheckout: (address: string, paymentMethod: string) => void;
+}
+
+const FullWindowCart = () => {
   const { cart, addItem, removeItem } = useCart();
   const router = useRouter();
   const [isClient, setIsClient] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
@@ -39,6 +51,16 @@ export default function FullWindowCart() {
 
   const handleAddMoreItems = () => {
     router.push("/order");
+  };
+
+
+  const handleCheckoutClick = () => {
+    setIsModalOpen(true);
+  };
+
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
   };
 
   return (
@@ -79,12 +101,15 @@ export default function FullWindowCart() {
           <p>{formatRupiah(parseFloat(totalAmount))}</p>
         </div>
         <p className="text-sm text-gray-500 mt-2">
-        Pajak dan biaya pengiriman dihitung saat checkout.
+          Pajak dan biaya pengiriman dihitung saat checkout.
         </p>
       </div>
 
       <div className="mt-6 space-y-3">
-        <button className="w-full sm:w-auto hover:bg-[#000] font-mono hover:text-white py-2 sm:py-3 px-4 sm:px-6 rounded-sm border-2 border-black font-semibold bg-white text-black transition-all duration-200">
+        <button
+          className="w-full sm:w-auto hover:bg-[#000] font-mono hover:text-white py-2 sm:py-3 px-4 sm:px-6 rounded-sm border-2 border-black font-semibold bg-white text-black transition-all duration-200"
+          onClick={handleCheckoutClick}
+        >
           Checkout
         </button>
       </div>
@@ -97,6 +122,107 @@ export default function FullWindowCart() {
           Pilih Makanan Lainnya
         </button>
       </div>
+
+      {/* Checkout Modal */}
+      {isModalOpen && (
+        <CheckoutModal
+          isOpen={isModalOpen}
+          onClose={handleModalClose}
+          onCheckout={(address, paymentMethod) => {
+            console.log("Checkout address: ", address);
+            console.log("Checkout payment method: ", paymentMethod);
+            handleModalClose();
+          }}
+        />
+      )}
     </div>
   );
-}
+};
+
+const CheckoutModal = ({ isOpen, onClose, onCheckout }: CheckoutModalProps) => {
+  const { user, logout } = useCart();
+  const [address, setAddress] = useState("");
+  const [selectedPayment, setSelectedPayment] = useState("");
+  const [location, setLocation] = useState<[number, number] | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (user === null) {
+      alert("Anda harus login untuk checkout!");
+      onClose();
+    }
+  }, [user, onClose]);
+
+  const handleCheckout = async () => {
+    if (!address || !selectedPayment || !location) {
+      alert("Harap isi semua data!");
+      return;
+    }
+  
+    setIsSubmitting(true);
+  
+    // Simulasi sukses tanpa mengirim ke Supabase, mungkin bisa saya kembangkan nanti, karena saya membuat webnya hanya 3 hari
+    setTimeout(() => {
+      alert("Pesanan berhasil dibuat!");
+      logout();
+      onClose();
+      onCheckout(address, selectedPayment);
+      setIsSubmitting(false);
+    }, 2000);
+  };
+  
+  
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="bg-white p-6 rounded-md w-full max-w-md">
+        <h2 className="text-xl font-bold mb-4">Checkout</h2>
+
+        {/* Alamat */}
+        <label className="block text-sm font-medium">Alamat</label>
+        <input
+          type="text"
+          className="w-full border p-2 rounded-md mb-3"
+          value={address}
+          onChange={(e) => setAddress(e.target.value)}
+          placeholder="Masukkan alamat lengkap"
+        />
+
+        {/* Pilih Lokasi di Peta */}
+        <label className="block text-sm font-medium">Pilih Lokasi</label>
+        <DynamicMap location={location} setLocation={setLocation} />
+
+        {/* Metode Pembayaran */}
+        <label className="block text-sm font-medium mt-3">Metode Pembayaran</label>
+        <select
+          className="w-full border p-2 rounded-md mb-3"
+          value={selectedPayment}
+          onChange={(e) => setSelectedPayment(e.target.value)}
+        >
+          <option value="">Pilih metode pembayaran</option>
+          <option value="GOPAY">Gopay</option>
+          <option value="OVO">OVO</option>
+        </select>
+
+        <button
+          onClick={handleCheckout}
+          disabled={isSubmitting}
+          className="w-full bg-blue-600 text-white py-2 rounded-md mt-3"
+        >
+          {isSubmitting ? "Memproses..." : "Pesan Sekarang"}
+        </button>
+
+        <button
+          onClick={onClose}
+          className="w-full bg-gray-300 py-2 rounded-md mt-2"
+        >
+          Batal
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default FullWindowCart;
