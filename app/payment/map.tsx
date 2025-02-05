@@ -2,6 +2,16 @@
 
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
+import L from "leaflet";
+
+const customIcon = new L.Icon({
+  iconUrl: new URL("leaflet/dist/images/marker-icon.png", import.meta.url).href,
+  shadowUrl: new URL("leaflet/dist/images/marker-shadow.png", import.meta.url).href,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41],
+});
 
 export default function MapComponent({
   location,
@@ -37,5 +47,5 @@ function LocationMarker({
     },
   });
 
-  return location ? <Marker position={location} /> : null;
+  return location ? <Marker position={location} icon={customIcon} /> : null;
 }

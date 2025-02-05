@@ -1,20 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useCart } from "../../app/context/cartcontext";
+import { useCart } from "../api/cartcontext";
 import { menu } from "../../app/product/datamenu";
 import { useRouter } from "next/navigation";
-//import { supabase } from "../../lib/supabase";
-import dynamic from "next/dynamic";
-import "leaflet/dist/leaflet.css";
-
-const DynamicMap = dynamic(() => import("../payment/map"), { ssr: false });
-
-interface CheckoutModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onCheckout: (address: string, paymentMethod: string) => void;
-}
+import CheckoutModal from "../payment/checkoutmodal";
 
 const FullWindowCart = () => {
   const { cart, addItem, removeItem } = useCart();
@@ -36,11 +26,13 @@ const FullWindowCart = () => {
 
   const getItemPrice = (itemName: string): number => {
     for (const category in menu) {
+      if (!Array.isArray(menu[category])) continue;
       const item = menu[category].find((item) => item.name === itemName);
       if (item) return item.price;
     }
     return 0;
   };
+  
 
   const totalAmount = Object.entries(cart)
     .reduce(
@@ -53,11 +45,9 @@ const FullWindowCart = () => {
     router.push("/order");
   };
 
-
   const handleCheckoutClick = () => {
     setIsModalOpen(true);
   };
-
 
   const handleModalClose = () => {
     setIsModalOpen(false);
@@ -135,92 +125,6 @@ const FullWindowCart = () => {
           }}
         />
       )}
-    </div>
-  );
-};
-
-const CheckoutModal = ({ isOpen, onClose, onCheckout }: CheckoutModalProps) => {
-  const { user, logout } = useCart();
-  const [address, setAddress] = useState("");
-  const [selectedPayment, setSelectedPayment] = useState("");
-  const [location, setLocation] = useState<[number, number] | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  useEffect(() => {
-    if (user === null) {
-      alert("Anda harus login untuk checkout!");
-      onClose();
-    }
-  }, [user, onClose]);
-
-  const handleCheckout = async () => {
-    if (!address || !selectedPayment || !location) {
-      alert("Harap isi semua data!");
-      return;
-    }
-  
-    setIsSubmitting(true);
-  
-    // Simulasi sukses tanpa mengirim ke Supabase, mungkin bisa saya kembangkan nanti, karena saya membuat webnya hanya 3 hari
-    setTimeout(() => {
-      alert("Pesanan berhasil dibuat!");
-      logout();
-      onClose();
-      onCheckout(address, selectedPayment);
-      setIsSubmitting(false);
-    }, 2000);
-  };
-  
-  
-
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white p-6 rounded-md w-full max-w-md">
-        <h2 className="text-xl font-bold mb-4">Checkout</h2>
-
-        {/* Alamat */}
-        <label className="block text-sm font-medium">Alamat</label>
-        <input
-          type="text"
-          className="w-full border p-2 rounded-md mb-3"
-          value={address}
-          onChange={(e) => setAddress(e.target.value)}
-          placeholder="Masukkan alamat lengkap"
-        />
-
-        {/* Pilih Lokasi di Peta */}
-        <label className="block text-sm font-medium">Pilih Lokasi</label>
-        <DynamicMap location={location} setLocation={setLocation} />
-
-        {/* Metode Pembayaran */}
-        <label className="block text-sm font-medium mt-3">Metode Pembayaran</label>
-        <select
-          className="w-full border p-2 rounded-md mb-3"
-          value={selectedPayment}
-          onChange={(e) => setSelectedPayment(e.target.value)}
-        >
-          <option value="">Pilih metode pembayaran</option>
-          <option value="GOPAY">Gopay</option>
-          <option value="OVO">OVO</option>
-        </select>
-
-        <button
-          onClick={handleCheckout}
-          disabled={isSubmitting}
-          className="w-full bg-blue-600 text-white py-2 rounded-md mt-3"
-        >
-          {isSubmitting ? "Memproses..." : "Pesan Sekarang"}
-        </button>
-
-        <button
-          onClick={onClose}
-          className="w-full bg-gray-300 py-2 rounded-md mt-2"
-        >
-          Batal
-        </button>
-      </div>
     </div>
   );
 };

@@ -1,15 +1,9 @@
 "use client";
 
-import React, {
-  createContext,
-  useState,
-  useContext,
-  ReactNode,
-  useEffect,
-  useCallback,
-} from "react";
+import React, { createContext, useState, useContext, ReactNode, useEffect, useCallback, useRef } from "react";
 import { MenuItem } from "../product/datamenu";
 import { supabase } from "../../lib/supabase";
+import { User } from "@supabase/auth-js";
 
 type Cart = { [key: string]: number };
 
@@ -17,9 +11,8 @@ interface AuthCartContextType {
   cart: Cart;
   addItem: (item: MenuItem) => void;
   removeItem: (item: MenuItem) => void;
-  user: string | null;
-  login: (username: string) => void;
-  logout: () => void;
+  user: User | null;
+  clearCart: () => void;
 }
 
 const AuthCartContext = createContext<AuthCartContextType | undefined>(undefined);
@@ -30,66 +23,101 @@ interface AuthCartProviderProps {
 
 export const CartProvider = ({ children }: AuthCartProviderProps) => {
   const [cart, setCart] = useState<Cart>({});
-  const [user, setUser] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const lastSavedCart = useRef<Cart | null>(null);
 
   useEffect(() => {
-    const fetchSession = async () => {
-      const { data, error } = await supabase.auth.getSession();
-      if (error) {
-        console.error("Error fetching session:", error.message);
-        return;
-      }
-      if (data?.session) {
-        setUser(data.session.user?.email || null);
-      }
+    const checkAuth = async () => {
+      const { data } = await supabase.auth.getSession();
+      setUser(data?.session?.user || null);
+      console.log("User fetched:", data?.session?.user);
     };
-    fetchSession();
+
+    checkAuth();
+
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (_, session) => {
+        setUser(session?.user || null);
+        console.log("Auth state changed:", session?.user);
+      }
+    );
+
+    return () => {
+      authListener?.subscription.unsubscribe();
+    };
   }, []);
 
   const fetchCart = useCallback(async () => {
-    if (!user) return;
+    if (!user?.email) return;
 
     const { data, error } = await supabase
       .from("carts")
       .select("cart")
-      .eq("username", user)
+      .eq("email", user.email)
       .single();
 
     if (error) {
       console.error("Error fetching cart:", error.message);
       setCart({});
-    } else {
-      setCart(data?.cart || {});
+      return;
     }
+
+    const formattedCart = Array.isArray(data?.cart)
+      ? Object.fromEntries(data.cart.map((item) => [item.name, item.quantity]))
+      : {};
+
+    setCart(formattedCart);
   }, [user]);
 
   useEffect(() => {
-    if (user) {
+    if (user?.email) {
       fetchCart();
     }
-  }, [fetchCart, user]);
+  }, [user, fetchCart]);
 
   const updateCart = useCallback(async () => {
-    if (!user) return;
+    if (!user?.email) return;
+
+    if (JSON.stringify(lastSavedCart.current) === JSON.stringify(cart)) {
+      console.log("Cart tidak berubah, tidak perlu update.");
+      return;
+    }
+
+    const formattedCart = Object.entries(cart).map(([name, quantity]) => ({
+      name,
+      quantity,
+    }));
 
     const { error } = await supabase
       .from("carts")
       .upsert(
-        [{ username: user, cart, updated_at: new Date().toISOString() }],
-        { onConflict: "username" }
-      )
-      .select();
+        [
+          {
+            email: user.email,
+            cart: formattedCart,
+            updated_at: new Date().toISOString(),
+          },
+        ],
+        { onConflict: "email" }
+      );
 
     if (error) {
       console.error("Error updating cart:", error.message);
+    } else {
+      lastSavedCart.current = cart;
     }
-  }, [user, cart]);
+  }, [cart, user]);
 
   useEffect(() => {
-    updateCart();
+    const timer = setTimeout(() => {
+      updateCart();
+    }, 500);
+
+    return () => clearTimeout(timer);
   }, [cart, updateCart]);
 
   const addItem = (item: MenuItem & { quantity?: number }) => {
+    if (!user) return;
     setCart((prevCart) => {
       const qtyToAdd = item.quantity ?? 1;
       return {
@@ -100,6 +128,8 @@ export const CartProvider = ({ children }: AuthCartProviderProps) => {
   };
 
   const removeItem = (item: MenuItem) => {
+    if (!user) return;
+
     setCart((prevCart) => {
       const newCart = { ...prevCart };
       if (newCart[item.name] > 1) {
@@ -111,19 +141,13 @@ export const CartProvider = ({ children }: AuthCartProviderProps) => {
     });
   };
 
-  const login = async (username: string) => {
-    setUser(username);
-  };
-
-  const logout = () => {
-    setUser(null);
+  const clearCart = () => {
+    if (!user) return;
     setCart({});
   };
 
   return (
-    <AuthCartContext.Provider
-      value={{ cart, addItem, removeItem, user, login, logout }}
-    >
+    <AuthCartContext.Provider value={{ cart, addItem, removeItem, user, clearCart }}>
       {children}
     </AuthCartContext.Provider>
   );

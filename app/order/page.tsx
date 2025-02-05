@@ -5,7 +5,7 @@ import Image from "next/image";
 import { menu } from "../product/datamenu";
 import { X, Minus, Plus } from "lucide-react";
 import { Dialog } from "@headlessui/react";
-import { useCart } from "../context/cartcontext";
+import { useCart } from "../api/cartcontext";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 

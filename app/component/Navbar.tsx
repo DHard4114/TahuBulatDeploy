@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { useAuth } from "../context/authcontext";
+import { useAuth } from "../api/auth/authcontext";
 import { useLogout } from "../auth/logout";
 import { User, ShoppingCart, Menu as HamburgerIcon } from "lucide-react";
-import { useCart } from "../context/cartcontext";
+import { useCart } from "../api/cartcontext";
 
 export default function Navbar() {
   const { user } = useAuth();

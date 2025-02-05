@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "../../../context/authcontext";
+import { useAuth } from "../../../api/auth/authcontext";
 
 export default function UpdatePasswordPage() {
   const { updatePassword } = useAuth();
