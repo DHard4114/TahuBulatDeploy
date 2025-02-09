@@ -5,8 +5,8 @@ import Image from "next/image";
 import { menu } from "../product/datamenu";
 import { X, Minus, Plus } from "lucide-react";
 import { Dialog } from "@headlessui/react";
-import { useCart } from "../api/cartcontext";
-import { supabase } from "@/lib/supabase";
+import { useCart } from "../context/CartProvider";
+import { createClientSupabase } from "@/lib/supabaseClient";
 import { useRouter } from "next/navigation";
 
 type MenuItem = {
@@ -21,6 +21,8 @@ interface User {
   id: string;
   email?: string;
 }
+
+const supabase = createClientSupabase();
 
 export default function OrderPage() {
   const { addItem } = useCart();
@@ -104,7 +106,7 @@ export default function OrderPage() {
             <h2 className="text-4xl sm:text-5xl font-cookie font-bold mb-6 border-b pb-2">
               {category}
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {items.map((item, index) => (
                 <div
                   key={index}
@@ -124,7 +126,7 @@ export default function OrderPage() {
                   <p className="font-mono font-light mt-2 text-sm">
                     {item.description}
                   </p>
-                  <p className="font-cookie text-2xl mt-2 text-[#3bff4c]">
+                  <p className="font-cookie text-2xl mt-2 text-[#358128]">
                     Rp {formatPrice(item.price)}
                   </p>
                 </div>
@@ -143,10 +145,10 @@ export default function OrderPage() {
         <Dialog.Panel className="bg-white p-6 rounded-sm max-w-sm w-full relative">
           <button
             aria-label="Close"
-            className="absolute top-2 right-2 p-2 text-lg"
+            className="absolute top-1 right-1 text-lg sm:text-sm"
             onClick={() => setIsOpen(false)}
           >
-            <X size={24} />
+            <X size={20} />
           </button>
 
           {selectedItem && (
@@ -164,7 +166,7 @@ export default function OrderPage() {
               <p className="font-mono font-light mt-2 text-sm">
                 {selectedItem.description}
               </p>
-              <p className="font-cookie text-2xl mt-2 text-[#5ae940]">
+              <p className="font-cookie text-2xl mt-2 text-[#358128]">
                 Rp {formatPrice(selectedItem.price)}
               </p>
 

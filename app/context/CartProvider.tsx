@@ -1,8 +1,16 @@
 "use client";
 
-import React, { createContext, useState, useContext, ReactNode, useEffect, useCallback, useRef } from "react";
+import React, {
+  createContext,
+  useState,
+  useContext,
+  ReactNode,
+  useEffect,
+  useCallback,
+  useRef,
+} from "react";
 import { MenuItem } from "../product/datamenu";
-import { supabase } from "../../lib/supabase";
+import { createClientSupabase } from "../../lib/supabaseClient";
 import { User } from "@supabase/auth-js";
 
 type Cart = { [key: string]: number };
@@ -15,7 +23,9 @@ interface AuthCartContextType {
   clearCart: () => void;
 }
 
-const AuthCartContext = createContext<AuthCartContextType | undefined>(undefined);
+const AuthCartContext = createContext<AuthCartContextType | undefined>(
+  undefined
+);
 
 interface AuthCartProviderProps {
   children: ReactNode;
@@ -25,12 +35,12 @@ export const CartProvider = ({ children }: AuthCartProviderProps) => {
   const [cart, setCart] = useState<Cart>({});
   const [user, setUser] = useState<User | null>(null);
   const lastSavedCart = useRef<Cart | null>(null);
+  const supabase = createClientSupabase();
 
   useEffect(() => {
     const checkAuth = async () => {
-      const { data } = await supabase.auth.getSession();
-      setUser(data?.session?.user || null);
-      console.log("User fetched:", data?.session?.user);
+      const { data } = await supabase.auth.getUser();
+      setUser(data.user || null);
     };
 
     checkAuth();
@@ -38,36 +48,37 @@ export const CartProvider = ({ children }: AuthCartProviderProps) => {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (_, session) => {
         setUser(session?.user || null);
-        console.log("Auth state changed:", session?.user);
       }
     );
 
     return () => {
       authListener?.subscription.unsubscribe();
     };
-  }, []);
+  }, [supabase]);
 
   const fetchCart = useCallback(async () => {
     if (!user?.email) return;
-
-    const { data, error } = await supabase
-      .from("carts")
-      .select("cart")
-      .eq("email", user.email)
-      .single();
-
-    if (error) {
-      console.error("Error fetching cart:", error.message);
-      setCart({});
-      return;
+  
+    try {
+      const res = await fetch("/api/cart", {
+        method: "GET",
+        headers: {
+          "X-User-Email": user.email,
+        },
+      });
+  
+      const data = await res.json();
+  
+      if (res.ok) {
+        setCart(data.cart);
+      } else {
+        console.error("Error fetching cart:", data.error);
+      }
+    } catch (error) {
+      console.error("Network error while fetching cart:", error);
     }
-
-    const formattedCart = Array.isArray(data?.cart)
-      ? Object.fromEntries(data.cart.map((item) => [item.name, item.quantity]))
-      : {};
-
-    setCart(formattedCart);
   }, [user]);
+  
 
   useEffect(() => {
     if (user?.email) {
@@ -78,35 +89,35 @@ export const CartProvider = ({ children }: AuthCartProviderProps) => {
   const updateCart = useCallback(async () => {
     if (!user?.email) return;
 
+    
+  
     if (JSON.stringify(lastSavedCart.current) === JSON.stringify(cart)) {
       console.log("Cart tidak berubah, tidak perlu update.");
       return;
     }
-
-    const formattedCart = Object.entries(cart).map(([name, quantity]) => ({
-      name,
-      quantity,
-    }));
-
-    const { error } = await supabase
-      .from("carts")
-      .upsert(
-        [
-          {
-            email: user.email,
-            cart: formattedCart,
-            updated_at: new Date().toISOString(),
-          },
-        ],
-        { onConflict: "email" }
-      );
-
-    if (error) {
-      console.error("Error updating cart:", error.message);
-    } else {
-      lastSavedCart.current = cart;
+  
+    try {
+      const res = await fetch("/api/cart", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "X-User-Email": user.email,
+        },
+        body: JSON.stringify({cart}),
+      });
+  
+      const data = await res.json();
+  
+      if (!res.ok) {
+        console.error("Error updating cart:", data.error);
+      } else {
+        lastSavedCart.current = cart;
+      }
+    } catch (error) {
+      console.error("Network error while updating cart:", error);
     }
   }, [cart, user]);
+  
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -118,13 +129,10 @@ export const CartProvider = ({ children }: AuthCartProviderProps) => {
 
   const addItem = (item: MenuItem & { quantity?: number }) => {
     if (!user) return;
-    setCart((prevCart) => {
-      const qtyToAdd = item.quantity ?? 1;
-      return {
-        ...prevCart,
-        [item.name]: (prevCart[item.name] || 0) + qtyToAdd,
-      };
-    });
+    setCart((prevCart) => ({
+      ...prevCart,
+      [item.name]: (prevCart[item.name] || 0) + (item.quantity ?? 1),
+    }));
   };
 
   const removeItem = (item: MenuItem) => {
@@ -147,7 +155,9 @@ export const CartProvider = ({ children }: AuthCartProviderProps) => {
   };
 
   return (
-    <AuthCartContext.Provider value={{ cart, addItem, removeItem, user, clearCart }}>
+    <AuthCartContext.Provider
+      value={{ cart, addItem, removeItem, user, clearCart }}
+    >
       {children}
     </AuthCartContext.Provider>
   );

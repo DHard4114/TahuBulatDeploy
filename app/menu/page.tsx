@@ -30,7 +30,7 @@ export default function MenuPage() {
             <h2 className="text-4xl sm:text-5xl font-cookie font-bold mb-6 border-b pb-2">
               {category}
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {items.map((item, index) => (
                 <div
                   key={index}

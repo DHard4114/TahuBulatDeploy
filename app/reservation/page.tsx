@@ -1,13 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { supabase } from "@/lib/supabase";
+import { createClientSupabase} from "@/lib/supabaseClient";
 import { useRouter } from "next/navigation";
 
 type User = {
   id: string;
   email?: string;
 };
+
+const supabase = createClientSupabase();
 
 export default function Reservation() {
   const [form, setForm] = useState({

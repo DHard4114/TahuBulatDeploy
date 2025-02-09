@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, useMemo } from "react";
 import { User } from "@supabase/auth-js";
-import { supabase } from "@/lib/supabase";
+import { createClientSupabase } from "@/lib/supabaseClient";
 
 interface AuthContextType {
   user: User | null;
@@ -19,6 +19,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const supabase = createClientSupabase();
     const checkUser = async () => {
       const { data } = await supabase.auth.getUser();
       setUser(data?.user ?? null);
@@ -38,6 +39,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const resetPassword = async (email: string) => {
+    const supabase = createClientSupabase();
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${typeof window !== "undefined" ? window.location.origin : ""}/auth/update-password`,
     });
@@ -51,6 +53,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const updatePassword = async (newPassword: string, token: string) => {
+    const supabase = createClientSupabase();
     const { error } = await supabase.auth.setSession({
       access_token: token,
       refresh_token: token,
@@ -74,6 +77,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logout = async () => {
+    const supabase = createClientSupabase();
     const { error } = await supabase.auth.signOut();
     if (error) console.error("Error signing out:", error.message);
     setUser(null);

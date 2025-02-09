@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useCart } from "../api/cartcontext";
+import { useCart } from "../context/CartProvider";
 import dynamic from "next/dynamic";
 import "leaflet/dist/leaflet.css";
 

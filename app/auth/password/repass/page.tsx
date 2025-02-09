@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useAuth } from "../../../api/auth/authcontext";
+import { useAuth } from "../../../context/AuthProvider";
 
 export default function ResetPasswordPage() {
   const { resetPassword } = useAuth();

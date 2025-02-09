@@ -1,8 +1,8 @@
 import "./globals.css";
 import Navbar from "./component/Navbar";
 import Footer from "./component/Footer";
-import { AuthProvider } from "./api/auth/authcontext";
-import { CartProvider } from "./api/cartcontext";
+import { AuthProvider } from "./context/AuthProvider";
+import { CartProvider } from "./context/CartProvider";
 import { Metadata } from "next";
 
 

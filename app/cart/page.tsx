@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useCart } from "../api/cartcontext";
+import { useCart } from "../context/CartProvider";
 import { menu } from "../../app/product/datamenu";
 import { useRouter } from "next/navigation";
 import CheckoutModal from "../payment/checkoutmodal";

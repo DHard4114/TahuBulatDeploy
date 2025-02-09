@@ -1,21 +1,38 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { useAuth } from "../api/auth/authcontext";
+import { useState, useRef, useEffect } from "react";
+import { useAuth } from "../context/AuthProvider";
 import { useLogout } from "../auth/logout";
 import { User, ShoppingCart, Menu as HamburgerIcon } from "lucide-react";
-import { useCart } from "../api/cartcontext";
+import { useCart } from "../context/CartProvider";
 
 export default function Navbar() {
   const { user } = useAuth();
   const { logout, isLoggingOut } = useLogout();
   const { cart } = useCart();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement | null>(null);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    if (isMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isMenuOpen]);
 
   const totalItems = Object.values(cart).reduce((acc, quantity) => acc + quantity, 0);
 
@@ -31,7 +48,7 @@ export default function Navbar() {
             <HamburgerIcon size={24} className="text-white cursor-pointer" />
           </div>
         </div>
-
+        <div ref={menuRef}>
         <ul
           className={`${
             isMenuOpen ? "flex" : "hidden"
@@ -58,8 +75,8 @@ export default function Navbar() {
             </Link>
           </li>
         </ul>
-
-        {/* Icons for User Authentication and Cart */}
+        </div>
+        {/* User Authentication and Cart */}
         <div className="flex items-center space-x-4 sm:ml-auto">
           {user ? (
             <>

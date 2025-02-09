@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { createClientSupabase } from "@/lib/supabaseClient";
 import Link from "next/link";
+
+const supabase = createClientSupabase();
 
 export default function SignUpPage() {
   const [email, setEmail] = useState("");
