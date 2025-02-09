@@ -41,7 +41,7 @@ export default function MenuPage() {
                     alt={item.name}
                     width={300}
                     height={200}
-                    className="rounded-sm w-full h-auto object-cover"
+                    className="rounded-sm w-full h-1/2 object-cover"
                   />
                   <h3 className="text-lg font-anton font-bold mt-4 text-[#2e2e2e] tracking-[0.05em]">
                     {item.name}

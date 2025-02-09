@@ -110,7 +110,7 @@ export default function OrderPage() {
               {items.map((item, index) => (
                 <div
                   key={index}
-                  className="bg-white p-4 rounded-md shadow-md border hover:scale-105 transition-transform duration-300 cursor-pointer"
+                  className="bg-white p-4 rounded-sm shadow-md border hover:scale-105 transition-transform duration-300 cursor-pointer"
                   onClick={() => handleItemClick(item)}
                 >
                   <Image
@@ -118,7 +118,7 @@ export default function OrderPage() {
                     alt={item.name}
                     width={300}
                     height={200}
-                    className="rounded-md w-full h-auto object-cover"
+                    className="rounded-sm w-full h-1/2 object-cover"
                   />
                   <h3 className="text-lg font-anton font-bold mt-4 text-[#2e2e2e] tracking-[0.05em]">
                     {item.name}
@@ -158,7 +158,7 @@ export default function OrderPage() {
                 alt={selectedItem.name}
                 width={300}
                 height={200}
-                className="rounded-md w-full h-auto object-cover"
+                className="rounded-sm w-full h-auto object-cover"
               />
               <h3 className="text-lg font-anton font-bold mt-4">
                 {selectedItem.name}
