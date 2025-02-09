@@ -110,7 +110,7 @@ export default function OrderPage() {
               {items.map((item, index) => (
                 <div
                   key={index}
-                  className="bg-white p-4 rounded-sm shadow-md border hover:scale-105 transition-transform duration-300 cursor-pointer"
+                  className="bg-white p-4 pb-8 rounded-sm shadow-md border hover:scale-105 transition-transform duration-300 cursor-pointer"
                   onClick={() => handleItemClick(item)}
                 >
                   <Image
@@ -123,10 +123,10 @@ export default function OrderPage() {
                   <h3 className="text-lg font-anton font-bold mt-4 text-[#2e2e2e] tracking-[0.05em]">
                     {item.name}
                   </h3>
-                  <p className="font-mono font-light mt-2 text-sm">
+                  <p className="font-mono font-light mt-2 text-xs lg:text-sm">
                     {item.description}
                   </p>
-                  <p className="font-cookie text-2xl mt-2 text-[#358128]">
+                  <p className="font-cookie text-md lg:text-xl text-[#358128]">
                     Rp {formatPrice(item.price)}
                   </p>
                 </div>
@@ -166,7 +166,7 @@ export default function OrderPage() {
               <p className="font-mono font-light mt-2 text-sm">
                 {selectedItem.description}
               </p>
-              <p className="font-cookie text-2xl mt-2 text-[#358128]">
+              <p className="font-cookie text-xl mt-2 text-[#358128]">
                 Rp {formatPrice(selectedItem.price)}
               </p>
 

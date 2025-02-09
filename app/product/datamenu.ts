@@ -18,7 +18,7 @@ export const menu: MenuData = {
     { name: "Tahu Bulat Mercon", description: "Tahu bulat pedas dengan isian sambal mercon yang menggugah selera.", price: 20_000, image: "/TahuBulat4.webp" },
     { name: "Tahu Bulat Isi Telor", description: "Tahu bulat dengan isian telur puyuh, menciptakan kenikmatan yang tak terlupakan.", price: 22_000, image: "/TahuBulatTelor.webp" },
     { name: "Tahu Bulat Isi Daging Rendang", description: "Tahu bulat dengan isian daging rendang khas Padang yang kaya rempah.", price: 30_000, image: "/TahuBulatRendang.jpg" },
-    { name: "Tahu Bulat Isi Ayam/Sapi Rempah Indonesia", description: "Tahu bulat dengan isian ayam atau sapi berbumbu rempah khas Nusantara.", price: 28_000, image: "/TahuBulatRempah.webp" },
+    { name: "Tahu Bulat Isi Ayam/Sapi Rempah", description: "Tahu bulat dengan isian ayam atau sapi berbumbu rempah khas Nusantara.", price: 28_000, image: "/TahuBulatRempah.webp" },
   ],
   MakananLain: [
     { name: "Otak-otak Kepiting Alaska", description: "Otak-otak khas dengan campuran kepiting Alaska yang lezat dan bergizi.", price: 35_000, image: "/Otak-otakKepiting.jpeg" },

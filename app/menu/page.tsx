@@ -46,7 +46,7 @@ export default function MenuPage() {
                   <h3 className="text-lg font-anton font-bold mt-4 text-[#2e2e2e] tracking-[0.05em]">
                     {item.name}
                   </h3>
-                  <p className="font-mono font-light mt-2 text-sm">
+                  <p className="font-mono font-light mt-2 text-xs lg:text-sm">
                     {item.description}
                   </p>
                 </div>
