@@ -27,26 +27,26 @@ export default function MenuPage() {
       <div className="container mx-auto px-4">
         {Object.entries(menu).map(([category, items]) => (
           <div key={category} className="my-12">
-            <h2 className="text-4xl sm:text-5xl font-cookie font-bold mb-6 border-b pb-2">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-cookie font-bold mb-6 border-b pb-2">
               {category}
             </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
               {items.map((item, index) => (
                 <div
                   key={index}
-                  className="bg-white p-4 rounded-sm shadow-md border hover:scale-105 transition-transform duration-300"
+                  className="bg-white p-3 rounded-sm shadow-md border hover:scale-105 transition-transform duration-300"
                 >
                   <Image
                     src={item.image}
                     alt={item.name}
                     width={300}
                     height={200}
-                    className="rounded-sm w-full h-1/2 object-cover"
+                    className="rounded-sm w-full h-2/5 md:h-3/6 lg:h-4/6 object-cover"
                   />
-                  <h3 className="text-lg font-anton font-bold mt-4 text-[#2e2e2e] tracking-[0.05em]">
+                  <h3 className="text-sm md:text-lg lg:text-xl font-anton font-bold pt-2 text-[#2e2e2e] tracking-[0.05em]">
                     {item.name}
                   </h3>
-                  <p className="font-mono font-light mt-2 text-xs lg:text-sm">
+                  <p className="font-mono font-light py-1 text-xs md:text-sm lg:text-base">
                     {item.description}
                   </p>
                 </div>

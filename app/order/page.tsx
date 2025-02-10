@@ -88,9 +88,9 @@ export default function OrderPage() {
           className="rounded-sm"
         />
         <div className="absolute inset-0 flex flex-col items-center sm:items-start justify-center text-center sm:text-left px-4 sm:px-10 md:px-20 lg:px-40">
-          <h1 className="font-anton font-extrabold text-4xl sm:text-6xl md:text-7xl lg:text-8xl bg-[#fffdfa] text-[#000000] border-2 border-black p-4">
+          <h1 className="font-anton font-extrabold text-2xl sm:text-4xl md:text-6xl lg:text-8xl bg-[#fffdfa] text-[#000000] border-2 border-black p-4">
             Get It Delivered
-            <p className="font-lato font-normal text-sm text-black">
+            <p className="font-lato font-normal text-xs sm:text-md md:text-base lg:text-lg text-black">
               Lapar? Cukup pesan dan makanan akan segera diantar! Pilih dari
               menu terbaik kami, checkout dalam hitungan detik, dan nikmati
               kelezatannya.
@@ -103,14 +103,14 @@ export default function OrderPage() {
       <div className="container mx-auto px-4 mt-12">
         {Object.entries(menu).map(([category, items]) => (
           <div key={category} className="my-12">
-            <h2 className="text-4xl sm:text-5xl font-cookie font-bold mb-6 border-b pb-2">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-cookie font-bold mb-6 border-b pb-2">
               {category}
             </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
               {items.map((item, index) => (
                 <div
                   key={index}
-                  className="bg-white p-4 pb-8 rounded-sm shadow-md border hover:scale-105 transition-transform duration-300 cursor-pointer"
+                  className="bg-white p-3 pb-8 rounded-sm shadow-md border hover:scale-105 transition-transform duration-300 cursor-pointer"
                   onClick={() => handleItemClick(item)}
                 >
                   <Image
@@ -118,15 +118,12 @@ export default function OrderPage() {
                     alt={item.name}
                     width={300}
                     height={200}
-                    className="rounded-sm w-full h-1/2 object-cover"
+                    className="rounded-sm w-full h-2/3 md:h-40 lg:h-4/6 object-cover"
                   />
-                  <h3 className="text-lg font-anton font-bold mt-4 text-[#2e2e2e] tracking-[0.05em]">
+                  <h3 className="text-sm md:text-lg lg:text-xl font-anton font-bold mt-4 text-[#2e2e2e] tracking-[0.05em]">
                     {item.name}
                   </h3>
-                  <p className="font-mono font-light mt-2 text-xs lg:text-sm">
-                    {item.description}
-                  </p>
-                  <p className="font-cookie text-md lg:text-xl text-[#358128]">
+                  <p className="font-cookie text-md md:text-xl lg:text-2xl text-[#358128]">
                     Rp {formatPrice(item.price)}
                   </p>
                 </div>
